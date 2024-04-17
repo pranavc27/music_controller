@@ -49,22 +49,9 @@ export default function CreateRoomPage() {
                     <FormHelperText>
                         <div align="center">Guest Control of Playback</div>
                     </FormHelperText>
-                    <RadioGroup
-                            row
-                            defaultValue="true"
-                            onChange={handleGuestCanPauseChange}
-                    >
-                        <FormControlLabel
-                            value="true"
-                            control= {<Radio color="primary" />}
-                            label ="Play/Pause"
-                            labelPlacement = "bottom" 
-                        />
-                        <FormControlLabel
-                            value="false"
-                            control= {<Radio color="secondary" />}
-                            label ="No Control"
-                            labelPlacement = "bottom" />
+                    <RadioGroup row defaultValue="true" onChange={handleGuestCanPauseChange}>
+                        <FormControlLabel value="true" control= {<Radio color="primary" />} label ="Play/Pause" labelPlacement = "bottom" />
+                        <FormControlLabel value="false" control= {<Radio color="secondary" />} label ="No Control" labelPlacement = "bottom" />
                     </RadioGroup>
                 </FormControl>
             </Grid>
