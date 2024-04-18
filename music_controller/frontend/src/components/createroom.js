@@ -9,8 +9,10 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateRoomPage() {
+    const navigate = useNavigate();
     const defaultvotes =2 ;
     const[guestCanPause , setGuestCanPause] = useState(true);
     const[votesToSkip , setVotesToSkip] = useState(defaultvotes);
@@ -34,7 +36,7 @@ export default function CreateRoomPage() {
         };
         fetch("api/create-room" , requestOption)
             .then((response) => response.json())
-            .then((data) => console.log(data));
+            .then((data) => navigate('/room/'+ data.code));
     };
 
     return(
