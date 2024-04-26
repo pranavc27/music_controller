@@ -4,7 +4,11 @@ import HomePage from "./homepage";
 
 
 export default function App(){
-    return(<HomePage />);
+    return(
+        <div className ="homepage">
+            <HomePage />
+        </div>
+    );
 }
 
 const appDiv = document.getElementById("app");

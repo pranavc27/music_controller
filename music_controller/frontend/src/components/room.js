@@ -1,53 +1,153 @@
-import React,{ useState , useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Navigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import CreateRoomPage from "./createroom";
 
-const Room = (props) => {
-    const[roomDetails , setRoomDetails] = useState({
-        votesToSkip: 2,
-        guestCanPause: false,
-        isHost: false,
+const Room = ({ leaveRoomCallback }) => {
+  const [roomDetails, setRoomDetails] = useState({
+    votesToSkip: 2,
+    guestCanPause: false,
+    isHost: false,
+  });
 
-    });
+  const [redirectToHome, setRedirectToHome] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
-    const {roomCode} = useParams();
+  const { roomCode } = useParams();
 
-    useEffect( ()=> {
-        const getRoomDetails = async () => {
-            try{
-                const response = await fetch('/api/get-room' + '?code=' + roomCode);
-                if(!response.ok)
-                {
-                    throw new Error("Failed to fetch room details");
-                }
-                const data = await response.json();
+  useEffect(() => {
+    const getRoomDetails = async () => {
+      try {
+        const response = await fetch("/api/get-room" + "?code=" + roomCode);
+        if (!response.ok) {
+          leaveRoomCallback();
+          return;
+        }
+        const data = await response.json();
 
-                setRoomDetails({
-                    votesToSkip: data.votes_to_skip,
-                    guestCanPause: data.guest_can_pause,
-                    isHost: data.is_host,
-                });
-            }
-            catch(error){
-                console.error("Error fetching room details:" , error);
-            }
-        };
+        setRoomDetails({
+          votesToSkip: data.votes_to_skip,
+          guestCanPause: data.guest_can_pause,
+          isHost: data.is_host,
+        });
+      } catch (error) {
+        console.error("Error fetching room details:", error);
+      }
+    };
 
-    getRoomDetails();
+    if (!redirectToHome) {
+      getRoomDetails();
+    }
+  }, [roomCode, redirectToHome, leaveRoomCallback]);
 
+  const leaveButtonPressed = async () => {
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      };
+      await fetch("/api/leave-room", requestOptions);
+      leaveRoomCallback();
+      setRedirectToHome(true);
+    } catch (error) {
+      console.error("Error leaving room:", error);
+    }
+  };
 
-    }, [roomCode]);
+  const updateShowSettings = (value) => {
+    setShowSettings(value);
+  };
 
-
-
-    return(
-        <div>
-            <h3>{roomCode}</h3>
-            <p>Votes: {roomDetails.votesToSkip}</p>
-            <p>Guest Can Pause: {roomDetails.guestCanPause.toString()}</p>
-            <p>Host: {roomDetails.isHost.toString()}</p>
-        </div>
+  const renderSettingsButton = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => updateShowSettings(true)}
+        >
+          Settings
+        </Button>
+      </Grid>
     );
+  };
+
+  const renderSettings = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateRoomPage
+            update={true}
+            votesToSkip={roomDetails.votesToSkip}
+            guestCanPause={roomDetails.guestCanPause}
+            roomCode={roomCode}
+            updateCallback={() => 
+            {
+              updateShowSettings(false);
+              setRoomDetails((prevRoomDetails) => 
+              ({
+                ...prevRoomDetails,
+                votesToSkip: roomDetails.votesToSkip,
+                guestCanPause: roomDetails.guestCanPause,
+              })
+            );
+            }}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => updateShowSettings(false)}
+          >
+            Close
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  if (redirectToHome) {
+    return <Navigate to="/" />;
+  }
+
+  return (
+    <Grid container spacing={1} align="center">
+      <Grid item xs={12}>
+        <Typography variant="h4" component="h4">
+          Code: {roomCode}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6" component="h6">
+          Votes: {roomDetails.votesToSkip}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6" component="h6">
+          Guest Can Pause: {roomDetails.guestCanPause.toString()}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="h6" component="h6">
+          Host: {roomDetails.isHost.toString()}
+        </Typography>
+      </Grid>
+      {roomDetails.isHost ? renderSettingsButton() : null}
+      <Grid item xs={12}>
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={leaveButtonPressed}
+        >
+          Leave Room
+        </Button>
+      </Grid>
+      {showSettings && renderSettings()}
+    </Grid>
+  );
 };
 
 export default Room;
-
