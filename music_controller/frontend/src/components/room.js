@@ -113,6 +113,12 @@ const Room = ({ leaveRoomCallback }) => {
     return <Navigate to="/" />;
   }
 
+  if(showSettings)
+  {
+    return renderSettings();
+  }
+
+
   return (
     <Grid container spacing={1} align="center">
       <Grid item xs={12}>
@@ -145,7 +151,6 @@ const Room = ({ leaveRoomCallback }) => {
           Leave Room
         </Button>
       </Grid>
-      {showSettings && renderSettings()}
     </Grid>
   );
 };
