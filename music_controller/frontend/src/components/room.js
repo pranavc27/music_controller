@@ -64,13 +64,17 @@ const Room = ({ leaveRoomCallback }) => {
       try {
         const response = await fetch("/spotify/current-song");
         if (!response.ok) {
-          return {};
-        } else {
-          const data = await response.json();
-          setSong(data);
+          throw new Error("Failed to fetch current song");
         }
+        const text = await response.text();
+        if (!text) {
+          throw new Error("Empty response from server");
+        }
+        const data = JSON.parse(text);
+        setSong(data);
       } catch (error) {
         console.error("Error fetching current song:", error);
+        setSong({});
       }
     };
 

@@ -9,12 +9,14 @@ import PauseIcon from "@mui/icons-material/Pause";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 
 const MusicPlayer = ({ 
-title = "Unknown Title",
-artist = "Unknown Artist",
-image_url = "https://p1.hiclipart.com/preview/995/888/40/music-player-icon-music-icon-solid-media-elements-icon-black-text-blackandwhite-line-logo-rectangle-circle-png-clipart.jpg", 
-is_playing = false,
-time = 0,
-duration = 1, }) => {
+  title = "Unknown Title",
+  artist = "Unknown Artist",
+  image_url = "https://p1.hiclipart.com/preview/995/888/40/music-player-icon-music-icon-solid-media-elements-icon-black-text-blackandwhite-line-logo-rectangle-circle-png-clipart.jpg", 
+  is_playing = false,
+  time = 0,
+  duration = 1,
+  votes = 0,
+  votes_required = 1, }) => {
   
   const pauseSong = async () => {
     console.log("Pause button clicked");
@@ -34,6 +36,16 @@ duration = 1, }) => {
     };
     const response = await fetch("/spotify/play", requestOptions);
     console.log("Play response:", response);
+  };
+
+  const skipSong = async () => {
+    console.log("Skip button clicked");
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    };
+    const response = await fetch("/spotify/skip", requestOptions);
+    console.log("Skip response:", response);
   };
 
 
@@ -56,7 +68,8 @@ duration = 1, }) => {
               <IconButton onClick={is_playing ? pauseSong : playSong}>
               {is_playing ? <PauseIcon /> : <PlayArrowIcon />}
               </IconButton>
-              <IconButton>
+              <IconButton onClick={skipSong}>
+                {votes} / {votes_required}
                 <SkipNextIcon />
               </IconButton>
             </div>

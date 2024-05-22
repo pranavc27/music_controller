@@ -54,8 +54,10 @@ export default function CreateRoomPage(props) {
     fetch("/api/update-room", requestOptions).then((response) => {
       if (response.ok) {
         setSuccessMsg("Room updated successfully!");
+        setErrorMsg("");
       } else {
         setErrorMsg("Error updating room...");
+        setSuccessMsg("");
       }
       props.updateCallback();
     });
